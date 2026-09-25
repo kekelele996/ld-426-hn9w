@@ -29,6 +29,19 @@ export const useMoodboardStore = defineStore('moodboards', {
       if (!board || board.imageIds.includes(imageId)) return;
       await db.moodboards.put({ ...board, imageIds: [...board.imageIds, imageId] });
       this.boards = await db.moodboards.orderBy('createdAt').reverse().toArray();
+    },
+    async updateImages(boardId: string, imageIds: string[]) {
+      const board = await db.moodboards.get(boardId);
+      if (!board) return;
+      await db.moodboards.put({ ...board, imageIds });
+      this.boards = await db.moodboards.orderBy('createdAt').reverse().toArray();
+    },
+    async clearImages(boardId: string) {
+      await this.updateImages(boardId, []);
+    },
+    async removeBoard(boardId: string) {
+      await db.moodboards.delete(boardId);
+      this.boards = await db.moodboards.orderBy('createdAt').reverse().toArray();
     }
   }
 });

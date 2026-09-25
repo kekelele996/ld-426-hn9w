@@ -15,6 +15,27 @@ export class DecorDatabase extends Dexie {
       moodboards: 'id, createdAt',
       comparisons: 'id, moodBoardId, createdAt'
     });
+    this.version(2)
+      .stores({
+        profiles: 'userId, primaryStyle, testedAt',
+        images: 'id, style, roomType',
+        moodboards: 'id, createdAt',
+        comparisons: 'id, moodBoardId, createdAt'
+      })
+      .upgrade((tx) =>
+        tx
+          .table('comparisons')
+          .toCollection()
+          .modify((plan) => {
+            plan.boardName ??= '';
+            plan.coverImageUrl ??= '';
+            plan.boardTags ??= [];
+            plan.images ??= [];
+            plan.version ??= 1;
+            plan.isCurrent ??= true;
+            plan.status ??= 'pending';
+          })
+      );
   }
 }
 
